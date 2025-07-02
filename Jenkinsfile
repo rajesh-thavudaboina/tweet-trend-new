@@ -4,14 +4,39 @@ pipeline {
             label "maven"
         }
     }
-environment{
-  PATH = "/opt/apache-maven-3.9.10/bin:$PATH"
-}
+
+    environment {
+        PATH = "/opt/apache-maven-3.9.10/bin:$PATH"
+        IMAGE_NAME = "rajeshthavudaboina/ttrend"
+        IMAGE_TAG = "2.1.2"
+    }
 
     stages {
-        stage('build') {
+        stage('Build with Maven') {
             steps {
-              sh "mvn clean deploy"
+                sh 'mvn clean deploy'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+            }
+        }
+
+        stage('Docker Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-hub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                        docker push $IMAGE_NAME:$IMAGE_TAG
+                        docker logout
+                    '''
+                }
             }
         }
     }
