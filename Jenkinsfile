@@ -8,7 +8,7 @@ pipeline {
     environment {
         PATH = "/opt/apache-maven-3.9.10/bin:$PATH"
         IMAGE_NAME = "rajeshthavudaboina/ttrend"
-        IMAGE_TAG = "2.1.2"
+        IMAGE_TAG = "2.1.3"
     }
 
     stages {
