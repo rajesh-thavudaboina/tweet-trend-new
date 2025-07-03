@@ -42,6 +42,7 @@ pipeline {
         stage ("deploy"){
             steps{
                 script{
+                    sh "chmod 0755 deploy.sh"
                     sh "./deploy.sh"
                 }
             }
